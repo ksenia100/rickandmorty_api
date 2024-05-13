@@ -1,14 +1,14 @@
 from django.db import models
 
-class Origins(models.Model):
-    name = models.CharField(max_length=255)
+class Origin(models.Model):
+    name = models.CharField(max_length=255, unique=True)
     url = models.URLField()
 
     class Meta:
-        db_table = 'origins'
+        db_table = 'origin'
         
-class Locations(models.Model):
-    name = models.CharField(max_length=255)
+class Location(models.Model):
+    name = models.CharField(max_length=255, unique=True)
     type = models.CharField(max_length=255)
     dimension = models.CharField(max_length=255)
     residents = models.TextField()
@@ -16,40 +16,40 @@ class Locations(models.Model):
     created = models.DateTimeField()
 
     class Meta:
-        db_table = 'locations'
+        db_table = 'location'
 
-class Episodes(models.Model):
-    name = models.CharField(max_length=255)
+class Episode(models.Model):
+    name = models.CharField(max_length=255, unique=True)
     air_date = models.DateTimeField()
     episode = models.CharField(max_length=255)
-    characters = models.ManyToManyField('Characters', through='Characters2Episodes', related_name='characters_reverse')
+    characters = models.ManyToManyField('Character', through='Character2Episode', related_name='character_reverse')
     url = models.URLField()
     created = models.DateTimeField()
 
     class Meta:
-        db_table = 'episodes'
+        db_table = 'episode'
 
-class Characters(models.Model):
+class Character(models.Model):
     STATUS_CHOICES = (
-        (0, 'Dead'),
-        (1, 'Alive'),
-        (2, 'Unknown'),
+        (1, 'Dead'),
+        (2, 'Alive'),
+        (3, 'Unknown'),
     )
     GENDER_CHOICES = (
-        (0, 'Female'),
-        (1, 'Male'),
-        (2, 'Genderless'),
-        (3, 'Unknown'),
+        (1, 'Female'),
+        (2, 'Male'),
+        (3, 'Genderless'),
+        (4, 'Unknown'),
     )
     SPECIES_CHOICES = (
-        (0, 'Human'),
-        (1, 'Alien'),
-        (2, 'Mythological'),
-        (3, 'Unknown'),
-        (4, 'Animal'),
-        (5, 'Disease'),
-        (6, 'Robot'),
-        (7, 'Croneberg'),
+        (1, 'Human'),
+        (2, 'Alien'),
+        (3, 'Mythological'),
+        (4, 'Unknown'),
+        (5, 'Animal'),
+        (6, 'Disease'),
+        (7, 'Robot'),
+        (8, 'Croneberg'),
     )
     
     name = models.CharField(max_length=255, unique=True)
@@ -57,19 +57,19 @@ class Characters(models.Model):
     species = models.IntegerField(choices=SPECIES_CHOICES)
     type = models.CharField(max_length=255)
     gender = models.IntegerField(choices=GENDER_CHOICES)
-    origin = models.ForeignKey(Origins, on_delete=models.CASCADE)
-    location = models.ForeignKey(Locations, on_delete=models.CASCADE)
-    episodes = models.ManyToManyField('Episodes', through='Characters2Episodes', related_name='episodes_reverse')
+    origin = models.ForeignKey(Origin, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    episodes = models.ManyToManyField('Episode', through='Character2Episode', related_name='episode_reverse')
     image = models.CharField(max_length=255)
     url = models.URLField()
     created = models.DateTimeField() 
 
     class Meta:
-        db_table = 'characters'
+        db_table = 'character'
 
-class Characters2Episodes(models.Model):
-    characters = models.ForeignKey(Characters, on_delete=models.CASCADE)
-    episodes = models.ForeignKey(Episodes, on_delete=models.CASCADE)
+class Character2Episode(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'characters2episodes'
+        db_table = 'character2episode'
